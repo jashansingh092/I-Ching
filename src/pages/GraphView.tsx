@@ -1820,7 +1820,7 @@ export default function GraphView() {
       {/* <InlineMath math={"x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)"} />
       <InlineMath math={"x \\in \\{0,1\\}^6 \\cdot Q_6 \\cdot d(x,y)"} />
       <InlineMath math={`x \\in \\{0,1\\}^6 \\cdot Q_6 \\cdot d(x,y)`} /> */}
-      <InlineMath math={"X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64"} />
+      <InlineMath math={"X = \\{0,1\\}^6 \quad |X| = 2^6 = 64"} />
 
     </p>
   </div>
