@@ -7,7 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+
+    "debug:deps": "npm list --depth=3 | grep -E 'katex|react-katex|vite|rollup|rolldown|esbuild|babel|swc'",
+    "debug:katex-version": "node -e \"console.log(require('./node_modules/katex/package.json').version)\"",
+    "debug:build-inspect": "vite build && grep -o '.\\{60\\}quad.\\{60\\}' dist/assets/index-*.js || echo 'quad not found in bundle'",
+    "debug:bundle-strings": "vite build --mode development && grep -o '.\\{40\\}lvert.\\{40\\}' dist/assets/index-*.js",
+    "debug:lockfile": "cat package-lock.json | grep -A3 '\"katex\"' | head -30",
+    "debug:full": "npm run debug:deps && npm run debug:katex-version && npm run debug:build-inspect"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
