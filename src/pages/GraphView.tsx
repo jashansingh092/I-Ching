@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { generateHexagrams } from "../core/generateHexgrams";
 import { InlineMath } from "react-katex";
@@ -807,9 +806,9 @@ export default function GraphView() {
   // TABS
   // ─────────────────────────────────────────────
   function renderTabContent() {
-      console.log("x \\cdot y");
-      console.log("X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64");
-      console.log(`X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64`);
+    console.log("x \\cdot y");
+    console.log("X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64");
+    console.log(`X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64`);
     // Overview tab
     if (activeTab === "overview") {
       if (!isAnythingActive) {
@@ -1800,128 +1799,117 @@ export default function GraphView() {
     if (activeTab === "model") {
       return (
         <div
-  className="fade-up py-6 px-6 md:px-10"
-  style={{ maxWidth: 900, margin: "0 auto" }}
->
-  {/* HEADER */}
-  <div className="text-center mb-10">
-    <div className="inline-block px-4 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs tracking-widest mb-3">
-      FORMAL MODEL
-    </div>
+          className="fade-up py-6 px-6 md:px-10"
+          style={{ maxWidth: 900, margin: "0 auto" }}
+        >
+          {/* HEADER */}
+          <div className="text-center mb-10">
+            <div className="inline-block px-4 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs tracking-widest mb-3">
+              FORMAL MODEL
+            </div>
 
-    <h2 className="text-3xl font-semibold tracking-tight mb-3">
-      Hexagram State Space
-    </h2>
+            <h2 className="text-3xl font-semibold tracking-tight mb-3">
+              Hexagram State Space
+            </h2>
 
-    <p className="text-neutral-400 text-sm max-w-xl mx-auto leading-relaxed">
-      The I Ching is modeled as a discrete state space where each
-      hexagram is a binary configuration of six lines. This induces a
-      6-dimensional hypercube structure, where transformations
-      correspond to minimal bit transitions.
-    </p>
+            <p className="text-neutral-400 text-sm max-w-xl mx-auto leading-relaxed">
+              The I Ching is modeled as a discrete state space where each
+              hexagram is a binary configuration of six lines. This induces a
+              6-dimensional hypercube structure, where transformations
+              correspond to minimal bit transitions.
+            </p>
 
-    <p className="text-extrabold text-xs font-mono mt-3">
-      {/* <InlineMath math={"x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)"} />
-      <InlineMath math={"x \\in \\{0,1\\}^6 \\cdot Q_6 \\cdot d(x,y)"} />
-      <InlineMath math={`x \\in \\{0,1\\}^6 \\cdot Q_6 \\cdot d(x,y)`} /> */}
-      {/* <InlineMath math={`X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64`} /> */}
-      {/* <InlineMath math={"X = \\{0,1\\}^6 \\quad \\lvert X \\rvert = 2^6 = 64"} /> */}
-      {/* <span><InlineMath math={"a \\quad b"} /></span> */}
-      {/* <InlineMath math={`X = \\{0,1\\}^6 \\quad \\lvert X \\rvert = 2^6 = 64`} /> */}
-      <InlineMath math={String.raw`X = \{0,1\}^6 \quad \lvert X \rvert = 2^6 = 64`} />
+            <p className="text-extrabold text-xs font-mono mt-3">
+              <InlineMath
+                math={"x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)"}
+              />
+            </p>
+          </div>
 
-    </p>
-  </div>
+          <div className="grid gap-5">
+            {/* STATE SPACE */}
+            <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
+              <div className="text-xs uppercase tracking-widest text-blue-400 mb-2">
+                State Space & Metric
+              </div>
 
-  <div className="grid gap-5">
-    {/* STATE SPACE */}
-    <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
-      <div className="text-xs uppercase tracking-widest text-blue-400 mb-2">
-        State Space & Metric
-      </div>
+              <p className="text-neutral-400 text-sm mb-4">
+                Defines the universe of all possible configurations and the
+                distance function governing transitions between them.
+              </p>
 
-      <p className="text-neutral-400 text-sm mb-4">
-        Defines the universe of all possible configurations and the
-        distance function governing transitions between them.
-      </p>
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
+                <InlineMath math="X = \{0,1\}^6 \quad |X| = 2^6 = 64" />
+                <InlineMath math="x = (x_1, \dots, x_6), \quad x_i \in \{0,1\}" />
+                <InlineMath math="d(x,y) = \sum_{i} \lvert x_i - y_i \rvert" />
+              </div>
+            </div>
+            {/* GRAPH */}
+            <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
+              <div className="text-xs uppercase tracking-widest text-emerald-400 mb-2">
+                Graph Structure
+              </div>
 
-      <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-        <InlineMath math="X = \{0,1\}^6 \quad |X| = 2^6 = 64" />
-        <InlineMath math="x = (x_1, \dots, x_6), \quad x_i \in \{0,1\}" />
-        <InlineMath math="d(x,y) = \sum_{i} \lvert x_i - y_i \rvert" />
-      </div>
-    </div>
-        <p>testing
+              <p className="text-neutral-400 text-sm mb-4">
+                Encodes adjacency: two states are connected if they differ by
+                exactly one bit. The resulting graph is a 6-dimensional
+                hypercube.
+              </p>
 
-          <InlineMath math="x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)" />
-          <InlineMath math="a^2 + b^2 = c^2" />
-        </p>
-    {/* GRAPH */}
-    <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
-      <div className="text-xs uppercase tracking-widest text-emerald-400 mb-2">
-        Graph Structure
-      </div>
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
+                <InlineMath math="G = (V,E), \quad V = X" />
+                <InlineMath math="(x,y) \in E \iff d(x,y) = 1" />
+                <InlineMath math="\deg(x) = 6 \quad |E| = 192" />
+                <InlineMath math="\mathrm{diam}(G) = 6" />
+                <InlineMath math="G \cong Q_6" />
+              </div>
+            </div>
 
-      <p className="text-neutral-400 text-sm mb-4">
-        Encodes adjacency: two states are connected if they differ by
-        exactly one bit. The resulting graph is a 6-dimensional
-        hypercube.
-      </p>
+            {/* DYNAMICS */}
+            <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
+              <div className="text-xs uppercase tracking-widest text-purple-400 mb-2">
+                Dynamics
+              </div>
 
-      <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-        <InlineMath math="G = (V,E), \quad V = X" />
-        <InlineMath math="(x,y) \in E \iff d(x,y) = 1" />
-        <InlineMath math="\deg(x) = 6 \quad |E| = 192" />
-        <InlineMath math="\mathrm{diam}(G) = 6" />
-        <InlineMath math="G \cong Q_6" />
-      </div>
-    </div>
+              <p className="text-neutral-400 text-sm mb-4">
+                Maps user interaction to graph operations: local neighborhoods,
+                shortest paths, and multi-point connectivity structures.
+              </p>
 
-    {/* DYNAMICS */}
-    <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
-      <div className="text-xs uppercase tracking-widest text-purple-400 mb-2">
-        Dynamics
-      </div>
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
+                <InlineMath math="S \subseteq V" />
+                <InlineMath math="|S| = 1 \Rightarrow N(x) = \{ y \mid d(x,y)=1 \}" />
+                <InlineMath math="|S| = 2 \Rightarrow P(x,y)\ \text{via BFS}" />
+                <InlineMath math="|S| \geq 3 \Rightarrow T \subseteq G\ (\text{Steiner tree})" />
+              </div>
+            </div>
 
-      <p className="text-neutral-400 text-sm mb-4">
-        Maps user interaction to graph operations: local neighborhoods,
-        shortest paths, and multi-point connectivity structures.
-      </p>
+            {/* PROJECTION */}
+            <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
+              <div className="text-xs uppercase tracking-widest text-yellow-400 mb-2">
+                Projection
+              </div>
 
-      <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-        <InlineMath math="S \subseteq V" />
-        <InlineMath math="|S| = 1 \Rightarrow N(x) = \{ y \mid d(x,y)=1 \}" />
-        <InlineMath math="|S| = 2 \Rightarrow P(x,y)\ \text{via BFS}" />
-        <InlineMath math="|S| \geq 3 \Rightarrow T \subseteq G\ (\text{Steiner tree})" />
-      </div>
-    </div>
+              <p className="text-neutral-400 text-sm mb-4">
+                The high-dimensional structure is embedded into 2D for
+                visualization. Spatial layout is not metric-preserving — only
+                adjacency is preserved.
+              </p>
 
-    {/* PROJECTION */}
-    <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
-      <div className="text-xs uppercase tracking-widest text-yellow-400 mb-2">
-        Projection
-      </div>
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
+                <InlineMath math="\pi : Q_6 \to \mathbb{R}^2" />
+                <InlineMath math="\text{topology preserved} \quad \cdot \quad \text{geometry distorted}" />
+              </div>
+            </div>
+          </div>
 
-      <p className="text-neutral-400 text-sm mb-4">
-        The high-dimensional structure is embedded into 2D for
-        visualization. Spatial layout is not metric-preserving — only
-        adjacency is preserved.
-      </p>
-
-      <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-        <InlineMath math="\pi : Q_6 \to \mathbb{R}^2" />
-        <InlineMath math="\text{topology preserved} \quad \cdot \quad \text{geometry distorted}" />
-      </div>
-    </div>
-  </div>
-
-  {/* FOOTER */}
-  <div className="mt-10 text-center">
-    <div className="inline-block px-4 py-2 rounded-full bg-neutral-900/60 border border-neutral-800 text-xs text-neutral-500 font-mono">
-      <InlineMath math="Q_6 \rightarrow \text{circular embedding}" />
-    </div>
-  </div>
-</div>
+          {/* FOOTER */}
+          <div className="mt-10 text-center">
+            <div className="inline-block px-4 py-2 rounded-full bg-neutral-900/60 border border-neutral-800 text-xs text-neutral-500 font-mono">
+              <InlineMath math="Q_6 \rightarrow \text{circular embedding}" />
+            </div>
+          </div>
+        </div>
       );
     }
   }
