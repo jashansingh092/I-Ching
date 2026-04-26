@@ -806,6 +806,8 @@ export default function GraphView() {
   // ─────────────────────────────────────────────
   function renderTabContent() {
       console.log("x \\cdot y");
+      console.log("X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64");
+      console.log(`X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64`);
     // Overview tab
     if (activeTab === "overview") {
       if (!isAnythingActive) {
@@ -1820,7 +1822,7 @@ export default function GraphView() {
       {/* <InlineMath math={"x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)"} />
       <InlineMath math={"x \\in \\{0,1\\}^6 \\cdot Q_6 \\cdot d(x,y)"} />
       <InlineMath math={`x \\in \\{0,1\\}^6 \\cdot Q_6 \\cdot d(x,y)`} /> */}
-      <InlineMath math={"X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64"} />
+      <InlineMath math={`X = \\{0,1\\}^6 \\quad |X| = 2^6 = 64`} />
 
     </p>
   </div>
