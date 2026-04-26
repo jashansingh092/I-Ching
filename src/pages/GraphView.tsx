@@ -3,7 +3,6 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { generateHexagrams } from "../core/generateHexgrams";
-import "katex/dist/katex.min.css";
 import { InlineMath } from "react-katex";
 
 // ─────────────────────────────────────────────
