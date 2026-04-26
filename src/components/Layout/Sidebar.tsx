@@ -15,7 +15,7 @@ import Logo from "./Logo";
 const navItems = [
   { to: "/", label: "Foundations", icon: BookOpen },
   { to: "/trigrams", label: "Trigrams", icon: Layers },
-  { to: "/hexagrams", label: "Hexagrams", icon: Grid3X3 },
+  { to: "/hexagrams", label: "Hexagram Builder", icon: Grid3X3 },
   { to: "/lab", label: "Transformation Lab", icon: Shuffle },
   { to: "/graph", label: "Graph", icon: Network },
   { to: "/ontology", label: "Ontology", icon: Database },
