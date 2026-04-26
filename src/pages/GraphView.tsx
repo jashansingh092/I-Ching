@@ -1839,7 +1839,11 @@ export default function GraphView() {
         <InlineMath math="d(x,y) = \sum_{i} \lvert x_i - y_i \rvert" />
       </div>
     </div>
+        <p>testing
 
+          <InlineMath math="x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)" />
+          <InlineMath math="a^2 + b^2 = c^2" />
+        </p>
     {/* GRAPH */}
     <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
       <div className="text-xs uppercase tracking-widest text-emerald-400 mb-2">
