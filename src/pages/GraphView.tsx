@@ -805,6 +805,8 @@ export default function GraphView() {
   // TABS
   // ─────────────────────────────────────────────
   function renderTabContent() {
+      const expr = String.raw`x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)`;
+
     // Overview tab
     if (activeTab === "overview") {
       if (!isAnythingActive) {
@@ -1816,9 +1818,9 @@ export default function GraphView() {
     </p>
 
     <p className="text-extrabold text-xs font-mono mt-3">
-      {/* <InlineMath math="x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)" /> */}
-      <InlineMath math="x \\in \\{0,1\\}^6 \\;\\cdot\\; Q_6 \\;\\cdot\\; d(x,y)" />
-      <InlineMath math={`x \\in \\{0,1\\}^6 \\;\\cdot\\; Q_6 \\;\\cdot\\; d(x,y)`} />
+      <InlineMath math={expr} />
+      <InlineMath math={String.raw`a^2 + b^2 = c^2`} />
+      <InlineMath math={String.raw`x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)`} />
     </p>
   </div>
 
