@@ -102,8 +102,39 @@ export default function Sidebar() {
 
       {/* ===== Footer ===== */}
       {!collapsed && (
-        <div className="mt-auto pt-6 text-xs text-neutral-500">
-          v0.1 • System Explorer
+        <div className="mt-auto pt-6">
+          <div className="relative flex flex-col items-center group">
+            {/* subtle glow aura */}
+            <div
+              className="absolute inset-0 blur-xl opacity-0 group-hover:opacity-40 transition duration-500"
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(99,102,241,0.25), transparent 70%)",
+              }}
+            />
+
+            {/* divider line */}
+            <div className="w-16 h-px bg-gradient-to-r from-transparent via-neutral-600 to-transparent mb-3 opacity-40" />
+
+            {/* main text */}
+            <div className="group">
+  <div className="font-mono text-[13px] tracking-[0.25em] text-neutral-300 transition-all duration-300 group-hover:tracking-[0.35em] group-hover:text-white group-hover:font-extrabold group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+    Aevoren Nousarion
+  </div>
+</div>
+
+            {/* subtext (hidden → reveal on hover) */}
+            <div
+              className="
+        text-[12px] text-extrabold
+        opacity-0 translate-y-1
+        group-hover:opacity-100 group-hover:translate-y-0
+        transition-all duration-300
+      "
+            >
+              Aeternum Somnium
+            </div>
+          </div>
         </div>
       )}
 
@@ -118,7 +149,7 @@ export default function Sidebar() {
           const handleMouseMove = (e: MouseEvent) => {
             const newWidth = Math.min(
               maxWidth,
-              Math.max(minWidth, startWidth + (e.clientX - startX))
+              Math.max(minWidth, startWidth + (e.clientX - startX)),
             );
 
             setWidth(newWidth);
