@@ -8,7 +8,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-
     "debug:deps": "npm list --depth=3 | grep -E 'katex|react-katex|vite|rollup|rolldown|esbuild|babel|swc'",
     "debug:katex-version": "node -e \"console.log(require('./node_modules/katex/package.json').version)\"",
     "debug:build-inspect": "vite build && grep -o '.\\{60\\}quad.\\{60\\}' dist/assets/index-*.js || echo 'quad not found in bundle'",
@@ -34,7 +33,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/react-katex": "^3.0.4",
-    "@vitejs/plugin-react": "^6.0.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
