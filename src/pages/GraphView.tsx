@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { generateHexagrams } from "../core/generateHexgrams";
-import { InlineMath } from "react-katex";
+import { InlineMath, BlockMath } from "react-katex";
 
 // ─────────────────────────────────────────────
 // DATA
@@ -1819,11 +1819,13 @@ export default function GraphView() {
               correspond to minimal bit transitions.
             </p>
 
-            <p className="text-extrabold text-xs font-mono mt-3">
-              <InlineMath
-                math={"x \in \{0,1\}^6 \;\cdot\; Q_6 \;\cdot\; d(x,y)"}
+            <div className="mt-4 text-neutral-300 text-sm font-mono">
+              <BlockMath
+                math={
+                  "x \\in \\{0,1\\}^6 \\subset Q_6, \\quad d(x,y) = \\sum_{i=1}^{6} |x_i - y_i|"
+                }
               />
-            </p>
+            </div>
           </div>
 
           <div className="grid gap-5">
@@ -1832,36 +1834,84 @@ export default function GraphView() {
               <div className="text-xs uppercase tracking-widest text-blue-400 mb-2">
                 State Space & Metric
               </div>
-
               <p className="text-neutral-400 text-sm mb-4">
                 Defines the universe of all possible configurations and the
-                distance function governing transitions between them.
+                Hamming distance function governing transitions between them.
+                Each hexagram is a vertex in a binary hypercube.
               </p>
-
-              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-                <InlineMath math="X = \{0,1\}^6 \quad |X| = 2^6 = 64" />
-                <InlineMath math="x = (x_1, \dots, x_6), \quad x_i \in \{0,1\}" />
-                <InlineMath math="d(x,y) = \sum_{i} \lvert x_i - y_i \rvert" />
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-1">
+                <p className="text-neutral-500 text-xs">
+                  state space & cardinality
+                </p>
+                <BlockMath math={"X = \\{0,1\\}^6, \\qquad |X| = 2^6 = 64"} />
+                <p className="text-neutral-500 text-xs mt-3">
+                  element representation
+                </p>
+                <BlockMath
+                  math={
+                    "x = (x_1, x_2, \\dots, x_6), \\quad x_i \\in \\{0,1\\}"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  hamming distance metric
+                </p>
+                <BlockMath
+                  math={"d(x,y) = \\sum_{i=1}^{6} |x_i - y_i| = \\|x - y\\|_1"}
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  metric axioms hold
+                </p>
+                <BlockMath
+                  math={
+                    "d(x,y) \\geq 0, \\quad d(x,y) = d(y,x), \\quad d(x,z) \\leq d(x,y) + d(y,z)"
+                  }
+                />
               </div>
             </div>
+
             {/* GRAPH */}
             <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
               <div className="text-xs uppercase tracking-widest text-emerald-400 mb-2">
                 Graph Structure
               </div>
-
               <p className="text-neutral-400 text-sm mb-4">
-                Encodes adjacency: two states are connected if they differ by
-                exactly one bit. The resulting graph is a 6-dimensional
-                hypercube.
+                Encodes adjacency: two hexagrams are connected if they differ by
+                exactly one line. The resulting graph is a 6-dimensional
+                hypercube — regular, vertex-transitive, and bipartite.
               </p>
-
-              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-                <InlineMath math="G = (V,E), \quad V = X" />
-                <InlineMath math="(x,y) \in E \iff d(x,y) = 1" />
-                <InlineMath math="\deg(x) = 6 \quad |E| = 192" />
-                <InlineMath math="\mathrm{diam}(G) = 6" />
-                <InlineMath math="G \cong Q_6" />
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-1">
+                <p className="text-neutral-500 text-xs">graph definition</p>
+                <BlockMath math={"G = (V, E), \\quad V = X = \\{0,1\\}^6"} />
+                <p className="text-neutral-500 text-xs mt-3">
+                  edge condition (hamming-1 adjacency)
+                </p>
+                <BlockMath
+                  math={
+                    "(x,y) \\in E \\iff d(x,y) = 1 \\iff x \\oplus y \\in \\{e_1,\\dots,e_6\\}"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  structural invariants
+                </p>
+                <BlockMath
+                  math={
+                    "\\deg(v) = 6 \\quad \\forall v \\in V, \\qquad |E| = \\frac{64 \\cdot 6}{2} = 192"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  diameter & isomorphism
+                </p>
+                <BlockMath
+                  math={"\\mathrm{diam}(G) = 6, \\qquad G \\cong Q_6"}
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  bipartite partition (yin / yang parity)
+                </p>
+                <BlockMath
+                  math={
+                    "V = V_0 \\cup V_1, \\quad V_p = \\left\\{ x \\mid \\sum x_i \\equiv p \\pmod{2} \\right\\}"
+                  }
+                />
               </div>
             </div>
 
@@ -1870,17 +1920,82 @@ export default function GraphView() {
               <div className="text-xs uppercase tracking-widest text-purple-400 mb-2">
                 Dynamics
               </div>
-
               <p className="text-neutral-400 text-sm mb-4">
                 Maps user interaction to graph operations: local neighborhoods,
-                shortest paths, and multi-point connectivity structures.
+                shortest paths, and multi-point Steiner connectivity. Each
+                operation mode corresponds to a distinct query on the hypercube.
               </p>
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-1">
+                <p className="text-neutral-500 text-xs">selected subset</p>
+                <BlockMath math={"S \\subseteq V, \\quad S \\neq \\emptyset"} />
+                <p className="text-neutral-500 text-xs mt-3">
+                  single node — open neighborhood
+                </p>
+                <BlockMath
+                  math={
+                    "|S| = 1 \\implies N(x) = \\{\\, y \\in V \\mid d(x,y) = 1 \\,\\}, \\quad |N(x)| = 6"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  two nodes — shortest path (bfs)
+                </p>
+                <BlockMath
+                  math={
+                    "|S| = 2 \\implies P(x,y) = \\text{argmin}_{p: x \\to y} |p|, \\quad |P| = d(x,y)"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  multi-node — steiner tree
+                </p>
+                <BlockMath
+                  math={
+                    "|S| \\geq 3 \\implies T^* = \\underset{T \\supseteq S}{\\mathrm{argmin}} \\; |E(T)|"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  transition operator (single line flip)
+                </p>
+                <BlockMath
+                  math={
+                    "\\delta_i(x) = x \\oplus e_i, \\quad e_i = (0,\\dots,1,\\dots,0)"
+                  }
+                />
+              </div>
+            </div>
 
-              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-                <InlineMath math="S \subseteq V" />
-                <InlineMath math="|S| = 1 \Rightarrow N(x) = \{ y \mid d(x,y)=1 \}" />
-                <InlineMath math="|S| = 2 \Rightarrow P(x,y)\ \text{via BFS}" />
-                <InlineMath math="|S| \geq 3 \Rightarrow T \subseteq G\ (\text{Steiner tree})" />
+            {/* SYMMETRY */}
+            <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
+              <div className="text-xs uppercase tracking-widest text-rose-400 mb-2">
+                Symmetry & Invariants
+              </div>
+              <p className="text-neutral-400 text-sm mb-4">
+                The hypercube admits a rich automorphism group. Complementation,
+                coordinate permutations, and reflections all preserve graph
+                structure — giving each hexagram a natural dual and orbit.
+              </p>
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-1">
+                <p className="text-neutral-500 text-xs">automorphism group</p>
+                <BlockMath
+                  math={
+                    "\\mathrm{Aut}(Q_6) \\cong (\\mathbb{Z}/2)^6 \\rtimes S_6, \\quad |\\mathrm{Aut}(Q_6)| = 2^6 \\cdot 6! = 46080"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  complementation (opposite hexagram)
+                </p>
+                <BlockMath
+                  math={
+                    "\\bar{x} = (1-x_1,\\dots,1-x_6), \\quad d(x, \\bar{x}) = 6"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  coordinate permutation invariance
+                </p>
+                <BlockMath
+                  math={
+                    "d(\\sigma(x),\\sigma(y)) = d(x,y) \\quad \\forall \\sigma \\in S_6"
+                  }
+                />
               </div>
             </div>
 
@@ -1889,24 +2004,43 @@ export default function GraphView() {
               <div className="text-xs uppercase tracking-widest text-yellow-400 mb-2">
                 Projection
               </div>
-
               <p className="text-neutral-400 text-sm mb-4">
                 The high-dimensional structure is embedded into 2D for
-                visualization. Spatial layout is not metric-preserving — only
-                adjacency is preserved.
+                visualization via a circular layout. The map preserves adjacency
+                but not distances — it is a topological, not isometric,
+                embedding.
               </p>
-
-              <div className="text-sm text-neutral-300 leading-relaxed space-y-2">
-                <InlineMath math="\pi : Q_6 \to \mathbb{R}^2" />
-                <InlineMath math="\text{topology preserved} \quad \cdot \quad \text{geometry distorted}" />
+              <div className="text-sm text-neutral-300 leading-relaxed space-y-1">
+                <p className="text-neutral-500 text-xs">projection map</p>
+                <BlockMath math={"\\pi : Q_6 \\hookrightarrow \\mathbb{R}^2"} />
+                <p className="text-neutral-500 text-xs mt-3">
+                  circular position of vertex x
+                </p>
+                <BlockMath
+                  math={
+                    "\\pi(x) = r \\cdot \\left(\\cos\\frac{2\\pi k(x)}{64},\\ \\sin\\frac{2\\pi k(x)}{64}\\right)"
+                  }
+                />
+                <p className="text-neutral-500 text-xs mt-3">
+                  what is preserved vs distorted
+                </p>
+                <BlockMath
+                  math={
+                    "(x,y)\\in E \\implies \\pi(x) \\sim \\pi(y), \\quad \\|\\pi(x)-\\pi(y)\\| \\neq d(x,y)"
+                  }
+                />
               </div>
             </div>
           </div>
 
           {/* FOOTER */}
           <div className="mt-10 text-center">
-            <div className="inline-block px-4 py-2 rounded-full bg-neutral-900/60 border border-neutral-800 text-xs text-neutral-500 font-mono">
-              <InlineMath math="Q_6 \rightarrow \text{circular embedding}" />
+            <div className="inline-block px-5 py-2 rounded-full bg-neutral-900/60 border border-neutral-800 text-xs text-neutral-500 font-mono">
+              <InlineMath
+                math={
+                  "Q_6 \\hookrightarrow \\mathbb{R}^2 \\quad \\text{(circular embedding, 64 vertices, 192 edges)}"
+                }
+              />
             </div>
           </div>
         </div>
