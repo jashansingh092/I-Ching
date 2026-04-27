@@ -1374,11 +1374,17 @@ function YinYangTab() {
 // ─────────────────────────────────────────────────────────────────
 // TAB: TRIGRAMS
 // ─────────────────────────────────────────────────────────────────
+// Drop-in replacement for TrigramsTab
+// Fix: hover scaling is applied inside the SVG transform string, never via CSS,
+// so it correctly pivots around the node's own center instead of the SVG origin.
+
 function TrigramsTab() {
   const [selected, setSelected] = useState<number | null>(null);
+  const [hovered,  setHovered]  = useState<number | null>(null);
+
   const trig = selected !== null ? TRIGRAMS[selected] : null;
 
-  // BaGua positions (octagonal)
+  // BaGua positions (octagonal, starting at top, going clockwise)
   const bagua = TRIGRAMS.map((t, i) => {
     const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
     return {
@@ -1404,73 +1410,41 @@ function TrigramsTab() {
       </p>
       <h2
         className="found-display"
-        style={{
-          fontSize: 28,
-          fontWeight: 600,
-          color: "#f5ead8",
-          marginBottom: 8,
-        }}
+        style={{ fontSize: 28, fontWeight: 600, color: "#f5ead8", marginBottom: 8 }}
       >
         Trigrams — Bā Guà (八卦)
       </h2>
-      <p
-        style={{
-          fontSize: 16,
-          color: "#8a8070",
-          marginBottom: 40,
-          lineHeight: 1.7,
-        }}
-      >
+      <p style={{ fontSize: 16, color: "#8a8070", marginBottom: 40, lineHeight: 1.7 }}>
         Three binary lines create 2³ = 8 trigrams. Each encodes an archetypal
         force in nature. Two trigrams stacked create a hexagram.
       </p>
 
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 40,
-          alignItems: "start",
-        }}
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "start" }}
       >
-        {/* BaGua diagram */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <svg width={400} height={400} viewBox="0 0 400 400">
-            {/* Outer decorative ring */}
-            <circle
-              cx={200}
-              cy={200}
-              r={188}
-              fill="none"
-              stroke="rgba(201,168,76,0.08)"
-              strokeWidth={1}
-            />
-            <circle
-              cx={200}
-              cy={200}
-              r={172}
-              fill="none"
-              stroke="rgba(201,168,76,0.05)"
-              strokeWidth={1}
-            />
+        {/* ── BaGua SVG diagram ── */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <svg
+            width={400}
+            height={400}
+            viewBox="0 0 400 400"
+            // Prevent any inherited CSS transform from leaking in
+            style={{ overflow: "visible", display: "block" }}
+          >
+            {/* Outer decorative rings */}
+            <circle cx={200} cy={200} r={188} fill="none" stroke="rgba(201,168,76,0.08)" strokeWidth={1} />
+            <circle cx={200} cy={200} r={172} fill="none" stroke="rgba(201,168,76,0.05)" strokeWidth={1} />
 
-            {/* Connection lines */}
+            {/* Spoke lines from center to each node */}
             {bagua.map((t, i) => (
               <line
-                key={i}
-                x1={200}
-                y1={200}
-                x2={t.cx}
-                y2={t.cy}
+                key={`spoke-${i}`}
+                x1={200} y1={200}
+                x2={t.cx} y2={t.cy}
                 stroke={t.color}
-                strokeWidth={0.5}
-                opacity={selected === i ? 0.4 : 0.08}
+                strokeWidth={0.6}
+                opacity={selected === i ? 0.45 : hovered === i ? 0.25 : 0.08}
+                style={{ transition: "opacity 0.2s" }}
               />
             ))}
 
@@ -1478,8 +1452,8 @@ function TrigramsTab() {
             <g transform="translate(200,200)">
               <circle
                 r={32}
-                fill="rgba(10,10,16,0.9)"
-                stroke="rgba(201,168,76,0.2)"
+                fill="rgba(10,10,16,0.92)"
+                stroke="rgba(201,168,76,0.22)"
                 strokeWidth={1}
               />
               <text
@@ -1487,54 +1461,84 @@ function TrigramsTab() {
                 dominantBaseline="central"
                 fontSize={24}
                 fill="rgba(201,168,76,0.6)"
-                style={{ fontFamily: "serif" }}
+                style={{ fontFamily: "serif", userSelect: "none" }}
               >
                 ☯
               </text>
             </g>
 
-            {/* Trigram nodes */}
-            {bagua.map((t, i) => (
-              <g
-                key={i}
-                className="bagua-node"
-                transform={`translate(${t.cx},${t.cy})`}
-                onClick={() => setSelected(selected === i ? null : i)}
-                style={{ color: t.color }}
-              >
-                <circle
-                  r={38}
-                  fill={selected === i ? `${t.color}18` : "rgba(10,10,16,0.85)"}
-                  stroke={t.color}
-                  strokeWidth={selected === i ? 1.5 : 0.8}
-                  strokeOpacity={selected === i ? 0.8 : 0.3}
-                />
-                {/* Trigram lines (small) */}
-                <g transform="translate(-14,-16)">
-                  <TrigramLines bits={t.bits} color={t.color} size={28} />
-                </g>
-                <text
-                  textAnchor="middle"
-                  y={18}
-                  fontSize={10}
-                  fill={t.color}
-                  opacity={0.9}
-                  style={{
-                    fontFamily: "'Cinzel', serif",
-                    letterSpacing: "0.05em",
-                  }}
+            {/* Trigram nodes
+                ─ Key fix: scale is applied INSIDE the transform string as the
+                  second operation, so it pivots around (cx, cy), not (0, 0).
+                  We never use CSS transform on these SVG groups.             */}
+            {bagua.map((t, i) => {
+              const isSelected = selected === i;
+              const isHovered  = hovered === i;
+              const scale      = isSelected ? 1.12 : isHovered ? 1.08 : 1;
+
+              return (
+                <g
+                  key={`node-${i}`}
+                  // translate to position, then scale around that center
+                  transform={`translate(${t.cx},${t.cy}) scale(${scale})`}
+                  onClick={() => setSelected(isSelected ? null : i)}
+                  onMouseEnter={() => setHovered(i)}
+                  onMouseLeave={() => setHovered(null)}
+                  style={{ cursor: "pointer" }}
                 >
-                  {t.name}
-                </text>
-              </g>
-            ))}
+                  {/* Glow ring — only when selected or hovered */}
+                  {(isSelected || isHovered) && (
+                    <circle
+                      r={44}
+                      fill="none"
+                      stroke={t.color}
+                      strokeWidth={1}
+                      opacity={isSelected ? 0.35 : 0.15}
+                    />
+                  )}
+
+                  {/* Main circle */}
+                  <circle
+                    r={38}
+                    fill={isSelected ? `${t.color}1a` : isHovered ? `${t.color}0e` : "rgba(10,10,16,0.88)"}
+                    stroke={t.color}
+                    strokeWidth={isSelected ? 1.8 : isHovered ? 1.2 : 0.8}
+                    strokeOpacity={isSelected ? 0.85 : isHovered ? 0.55 : 0.28}
+                    style={{ transition: "fill 0.18s, stroke-opacity 0.18s, stroke-width 0.18s" }}
+                  />
+
+                  {/* Trigram lines centred inside the circle */}
+                  <g transform="translate(-14,-16)">
+                    <TrigramLines bits={t.bits} color={t.color} size={28} />
+                  </g>
+
+                  {/* Name label */}
+                  <text
+                    textAnchor="middle"
+                    y={20}
+                    fontSize={10}
+                    fill={t.color}
+                    opacity={isSelected ? 1 : 0.75}
+                    style={{
+                      fontFamily: "'Cinzel', serif",
+                      letterSpacing: "0.05em",
+                      userSelect: "none",
+                      transition: "opacity 0.18s",
+                    }}
+                  >
+                    {t.name}
+                  </text>
+                </g>
+              );
+            })}
           </svg>
-          <p style={{ fontSize: 12, color: "#4a4438", textAlign: "center" }}>
+
+          <p style={{ fontSize: 12, color: "#4a4438", textAlign: "center", marginTop: 8 }}>
             Click any trigram to explore
           </p>
         </div>
 
-        {/* Detail panel */}
+        {/* ── Detail panel ── */}
         <div>
           {trig ? (
             <div
@@ -1547,55 +1551,29 @@ function TrigramsTab() {
                 padding: "32px 28px",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 20,
-                  marginBottom: 24,
-                }}
-              >
-                <TrigramLines
-                  bits={trig.bits}
-                  color={trig.color}
-                  size={56}
-                  animated
-                />
+              {/* Header */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: 24 }}>
+                <TrigramLines bits={trig.bits} color={trig.color} size={56} animated />
                 <div>
-                  <div style={{ fontSize: 32, lineHeight: 1 }}>
-                    {trig.symbol}
-                  </div>
-                  <div
-                    className="found-display"
-                    style={{ fontSize: 20, color: trig.color, marginTop: 6 }}
-                  >
+                  <div style={{ fontSize: 32, lineHeight: 1 }}>{trig.symbol}</div>
+                  <div className="found-display" style={{ fontSize: 20, color: trig.color, marginTop: 6 }}>
                     {trig.name}
                   </div>
-                  <div
-                    style={{
-                      fontSize: 18,
-                      color: `${trig.color}88`,
-                      letterSpacing: "0.1em",
-                    }}
-                  >
+                  <div style={{ fontSize: 18, color: `${trig.color}88`, letterSpacing: "0.1em" }}>
                     {trig.chinese}
                   </div>
                 </div>
               </div>
 
+              {/* Attribute grid */}
               <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 12,
-                  marginBottom: 20,
-                }}
+                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}
               >
                 {[
-                  { label: "Element", value: trig.element },
-                  { label: "Quality", value: trig.quality },
+                  { label: "Element",   value: trig.element },
+                  { label: "Quality",   value: trig.quality },
                   { label: "Direction", value: trig.direction },
-                  { label: "Bits", value: `[${trig.bits.join(", ")}]` },
+                  { label: "Bits",      value: `[${trig.bits.join(", ")}]` },
                 ].map((item) => (
                   <div
                     key={item.label}
@@ -1622,8 +1600,7 @@ function TrigramsTab() {
                       style={{
                         fontSize: 14,
                         color: "#e8e0d0",
-                        fontFamily:
-                          item.label === "Bits" ? "monospace" : "inherit",
+                        fontFamily: item.label === "Bits" ? "monospace" : "inherit",
                       }}
                     >
                       {item.value}
@@ -1632,25 +1609,13 @@ function TrigramsTab() {
                 ))}
               </div>
 
-              <p
-                style={{
-                  fontSize: 15,
-                  lineHeight: 1.8,
-                  color: "#8a8070",
-                  fontStyle: "italic",
-                }}
-              >
+              {/* Nature description */}
+              <p style={{ fontSize: 15, lineHeight: 1.8, color: "#8a8070", fontStyle: "italic" }}>
                 {trig.nature}
               </p>
 
-              {/* Bit breakdown */}
-              <div
-                style={{
-                  marginTop: 20,
-                  paddingTop: 20,
-                  borderTop: `1px solid ${trig.color}15`,
-                }}
-              >
+              {/* Line composition */}
+              <div style={{ marginTop: 20, paddingTop: 20, borderTop: `1px solid ${trig.color}15` }}>
                 <div
                   className="found-display"
                   style={{
@@ -1663,28 +1628,12 @@ function TrigramsTab() {
                 >
                   Line Composition
                 </div>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 6 }}
-                >
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {[...trig.bits].reverse().map((bit, di) => {
                     const lineNum = 3 - di;
                     return (
-                      <div
-                        key={di}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 12,
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: 10,
-                            color: "#4a4438",
-                            width: 36,
-                            fontFamily: "monospace",
-                          }}
-                        >
+                      <div key={di} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontSize: 10, color: "#4a4438", width: 36, fontFamily: "monospace" }}>
                           L{lineNum}
                         </span>
                         <HexLine
@@ -1695,13 +1644,7 @@ function TrigramsTab() {
                           animated
                           delay={di * 0.08}
                         />
-                        <span
-                          style={{
-                            fontSize: 11,
-                            color: bit === 1 ? trig.color : "#4a4438",
-                            fontFamily: "monospace",
-                          }}
-                        >
+                        <span style={{ fontSize: 11, color: bit === 1 ? trig.color : "#4a4438", fontFamily: "monospace" }}>
                           {bit} — {bit === 1 ? "Yang" : "Yin"}
                         </span>
                       </div>
@@ -1713,7 +1656,6 @@ function TrigramsTab() {
           ) : (
             <div
               style={{
-                height: "100%",
                 minHeight: 320,
                 display: "flex",
                 flexDirection: "column",
@@ -1722,26 +1664,15 @@ function TrigramsTab() {
                 color: "#4a4438",
               }}
             >
-              <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}>
-                ☯
-              </div>
-              <p
-                className="found-display"
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                }}
-              >
+              <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}>☯</div>
+              <p className="found-display" style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase" }}>
                 Select a trigram
               </p>
-              <p style={{ fontSize: 14, marginTop: 8 }}>
-                to explore its meaning
-              </p>
+              <p style={{ fontSize: 14, marginTop: 8 }}>to explore its meaning</p>
             </div>
           )}
 
-          {/* All 8 cards */}
+          {/* 8-card quick-select grid */}
           <div
             style={{
               display: "grid",
@@ -1753,11 +1684,9 @@ function TrigramsTab() {
             {TRIGRAMS.map((t, i) => (
               <button
                 key={i}
-                className="trig-card"
                 onClick={() => setSelected(selected === i ? null : i)}
                 style={{
-                  background:
-                    selected === i ? `${t.color}15` : "rgba(15,15,22,0.7)",
+                  background: selected === i ? `${t.color}15` : "rgba(15,15,22,0.7)",
                   border: `1px solid ${selected === i ? t.color + "50" : "rgba(255,255,255,0.05)"}`,
                   borderRadius: 10,
                   padding: "12px 8px",
@@ -1766,7 +1695,11 @@ function TrigramsTab() {
                   alignItems: "center",
                   gap: 6,
                   cursor: "pointer",
+                  // Safe to use CSS transform here — these are plain HTML buttons, not SVG groups
+                  transition: "transform 0.15s ease, background 0.15s, border-color 0.15s",
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = ""; }}
               >
                 <TrigramLines bits={t.bits} color={t.color} size={28} />
                 <span
@@ -1788,6 +1721,7 @@ function TrigramsTab() {
     </div>
   );
 }
+
 
 // ─────────────────────────────────────────────────────────────────
 // TAB: HEXAGRAMS
